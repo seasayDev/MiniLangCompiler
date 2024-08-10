@@ -12,22 +12,33 @@ public class EvaluatorVisitor extends MiniLangBaseVisitor<Integer> {
     @Override
     public Integer visitStatemntAssign(MiniLangParser.StatemntAssignContext ctx) {
         String varName = ctx.IDENTIFIER().getText();
-        int value = visit(ctx.expression());
+        Integer value = visit(ctx.expression());
+        if (value == null) {
+            value = 0;
+        }
         variables.put(varName, value);
         return value;
     }
 
     @Override
     public Integer visitStatemntPrint(MiniLangParser.StatemntPrintContext ctx) {
-        int value = visit(ctx.expression());
-        System.out.println(value);
-        return value;
+        Integer value = visit(ctx.expression());
+        if (value != null) {
+            System.out.println(value);
+        }
+        return 0;
     }
 
     @Override
     public Integer visitBinaryExprAdd(MiniLangParser.BinaryExprAddContext ctx) {
-        int left = visit(ctx.left);
-        int right = visit(ctx.right);
+        Integer left = visit(ctx.expression(0));
+        Integer right = visit(ctx.expression(1));
+        if (left == null) {
+            left = 0;
+        }
+        if (right == null) {
+            right = 0;
+        }
         if (ctx.bop.getText().equals("+")) {
             return left + right;
         } else {
@@ -37,12 +48,41 @@ public class EvaluatorVisitor extends MiniLangBaseVisitor<Integer> {
 
     @Override
     public Integer visitBinaryExprMult(MiniLangParser.BinaryExprMultContext ctx) {
-        int left = visit(ctx.left);
-        int right = visit(ctx.right);
+        Integer left = visit(ctx.expression(0));
+        Integer right = visit(ctx.expression(1));
+        if (left == null) {
+            left = 0;
+        }
+        if (right == null) {
+            right = 0;
+        }
         if (ctx.bop.getText().equals("*")) {
             return left * right;
-        } else {
+        } else if (ctx.bop.getText().equals("/")) {
+            if (right == 0) {
+                System.err.println("Error: Division by zero.");
+                return 0;
+            }
+            // Use integer division
             return left / right;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public Integer visitBinaryExprComp(MiniLangParser.BinaryExprCompContext ctx) {
+        Integer left = visit(ctx.expression(0));
+        Integer right = visit(ctx.expression(1));
+        if (left == null || right == null) {
+            return 0;
+        }
+        if (ctx.bop.getText().equals("==")) {
+            return left.equals(right) ? 1 : 0;
+        } else if (ctx.bop.getText().equals("!=")) {
+            return !left.equals(right) ? 1 : 0;
+        } else {
+            return 0;
         }
     }
 
@@ -64,8 +104,8 @@ public class EvaluatorVisitor extends MiniLangBaseVisitor<Integer> {
 
     @Override
     public Integer visitStatemntIF(MiniLangParser.StatemntIFContext ctx) {
-        int condition = visit(ctx.cdt);
-        if (condition != 0) {
+        Integer condition = visit(ctx.cdt);
+        if (condition != null && condition != 0) {
             visit(ctx.blockThen);
         } else if (ctx.blockElse != null) {
             visit(ctx.blockElse);
@@ -75,9 +115,20 @@ public class EvaluatorVisitor extends MiniLangBaseVisitor<Integer> {
 
     @Override
     public Integer visitStatemntWhile(MiniLangParser.StatemntWhileContext ctx) {
-        while (visit(ctx.cdt) != 0) {
+        while (true) {
+            Integer condition = visit(ctx.cdt);
+            if (condition == null || condition == 0) {
+                break;
+            }
             visit(ctx.blockWhile);
         }
         return 0;
+    }
+
+    @Override
+    public Integer visitStatemntRead(MiniLangParser.StatemntReadContext ctx) {
+        String variableName = ctx.IDENTIFIER().getText();
+        variables.put(variableName, 1); // Simulate reading input by setting the variable to 1
+        return 1;
     }
 }

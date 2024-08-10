@@ -40,15 +40,15 @@ public class Principale {
      * @param args
      */
     public static void main(String[] args) {
-        String source = ".\\source\\Exemple2.mnl";
+        String source = "source/Exemple2.mnl";
         System.out.println("Start Processing: " + source);
         ParseTree parseTree = parsing(source);
         System.out.println("End Parsing: " + source);
 
-        // Évaluer le code source en utilisant l'AST généré
+        
         if (parseTree != null) {
             EvaluatorVisitor evaluator = new EvaluatorVisitor();
-            evaluator.visit(parseTree);  // Évaluer l'AST en parcourant l'arbre
+            evaluator.visit(parseTree);  
         }
     }
 }
