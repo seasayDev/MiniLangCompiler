@@ -10,25 +10,25 @@ public class EvaluatorVisitor extends MiniLangBaseVisitor<Integer> {
     private Map<String, Integer> variables = new HashMap<>();
 
     @Override
-    public Integer visitAssignment(MiniLangParser.AssignmentContext ctx) {
-        String varName = ctx.ID().getText();
-        int value = visit(ctx.expr());
+    public Integer visitStatemntAssign(MiniLangParser.StatemntAssignContext ctx) {
+        String varName = ctx.IDENTIFIER().getText();
+        int value = visit(ctx.expression());
         variables.put(varName, value);
         return value;
     }
 
     @Override
-    public Integer visitPrint(MiniLangParser.PrintContext ctx) {
-        int value = visit(ctx.expr());
+    public Integer visitStatemntPrint(MiniLangParser.StatemntPrintContext ctx) {
+        int value = visit(ctx.expression());
         System.out.println(value);
         return value;
     }
 
     @Override
-    public Integer visitAddSub(MiniLangParser.AddSubContext ctx) {
-        int left = visit(ctx.expr(0));
-        int right = visit(ctx.expr(1));
-        if (ctx.op.getType() == MiniLangParser.ADD) {
+    public Integer visitBinaryExprAdd(MiniLangParser.BinaryExprAddContext ctx) {
+        int left = visit(ctx.left);
+        int right = visit(ctx.right);
+        if (ctx.bop.getText().equals("+")) {
             return left + right;
         } else {
             return left - right;
@@ -36,10 +36,10 @@ public class EvaluatorVisitor extends MiniLangBaseVisitor<Integer> {
     }
 
     @Override
-    public Integer visitMulDiv(MiniLangParser.MulDivContext ctx) {
-        int left = visit(ctx.expr(0));
-        int right = visit(ctx.expr(1));
-        if (ctx.op.getType() == MiniLangParser.MUL) {
+    public Integer visitBinaryExprMult(MiniLangParser.BinaryExprMultContext ctx) {
+        int left = visit(ctx.left);
+        int right = visit(ctx.right);
+        if (ctx.bop.getText().equals("*")) {
             return left * right;
         } else {
             return left / right;
@@ -47,28 +47,36 @@ public class EvaluatorVisitor extends MiniLangBaseVisitor<Integer> {
     }
 
     @Override
-    public Integer visitInt(MiniLangParser.IntContext ctx) {
-        return Integer.valueOf(ctx.INT().getText());
+    public Integer visitNumberLiteral(MiniLangParser.NumberLiteralContext ctx) {
+        return Integer.valueOf(ctx.NUMBER().getText());
     }
 
     @Override
-    public Integer visitId(MiniLangParser.IdContext ctx) {
-        String varName = ctx.ID().getText();
+    public Integer visitIdentifier(MiniLangParser.IdentifierContext ctx) {
+        String varName = ctx.IDENTIFIER().getText();
         return variables.getOrDefault(varName, 0);
     }
 
     @Override
-    public Integer visitParens(MiniLangParser.ParensContext ctx) {
-        return visit(ctx.expr());
+    public Integer visitExprParenth(MiniLangParser.ExprParenthContext ctx) {
+        return visit(ctx.expression());
     }
 
     @Override
-    public Integer visitIfStat(MiniLangParser.IfStatContext ctx) {
-        int condition = visit(ctx.expr());
+    public Integer visitStatemntIF(MiniLangParser.StatemntIFContext ctx) {
+        int condition = visit(ctx.cdt);
         if (condition != 0) {
-            visit(ctx.block(0));
-        } else if (ctx.block(1) != null) {
-            visit(ctx.block(1));
+            visit(ctx.blockThen);
+        } else if (ctx.blockElse != null) {
+            visit(ctx.blockElse);
+        }
+        return 0;
+    }
+
+    @Override
+    public Integer visitStatemntWhile(MiniLangParser.StatemntWhileContext ctx) {
+        while (visit(ctx.cdt) != 0) {
+            visit(ctx.blockWhile);
         }
         return 0;
     }
