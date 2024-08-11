@@ -42,7 +42,7 @@ public class Principale {
      * @param args
      */
     public static void main(String[] args) {
-        String source = "source/Exemple2.mnl";
+        String source = "source/Exemple1.mnl";
         System.out.println("Start Processing: " + source);
         ParseTree parseTree = parsing(source);
         System.out.println("End Parsing: " + source);
@@ -58,9 +58,9 @@ public class Principale {
             List<AssignInfo> assignInfos = defUseVisitor.getAssignInfos();
 
             for (AssignInfo info : assignInfos) {
-                System.out.println("Definis: " + info.getDefinedVariable());
+                System.out.println("Lecture: " + info.getDefinedVariable());
                 if (!info.getUsedVariables().isEmpty()) {
-                    System.out.println("Utilise: " + info.getUsedVariables());
+                    System.out.println("Ecriture: " + info.getUsedVariables());
                 }
             }
         }
