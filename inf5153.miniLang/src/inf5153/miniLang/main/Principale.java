@@ -10,6 +10,7 @@ import inf5153.miniLang.parser.ASTBuilder;
 import inf5153.miniLang.parser.MiniLangLexer;
 import inf5153.miniLang.parser.MiniLangParser;
 import inf5153.miniLang.visitor.EvaluatorVisitor;
+import inf5153.miniLang.javaGenerator.GeneratorVisitor;
 
 /**
  * Programme principal 
@@ -49,6 +50,8 @@ public class Principale {
         if (parseTree != null) {
             EvaluatorVisitor evaluator = new EvaluatorVisitor();
             evaluator.visit(parseTree);  
+            GeneratorVisitor generator = new GeneratorVisitor();
+            generator.visit(parseTree);
         }
     }
 }
