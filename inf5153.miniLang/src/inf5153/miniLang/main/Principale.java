@@ -1,15 +1,17 @@
 package inf5153.miniLang.main;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import inf5153.miniLang.parser.ASTBuilder;
 import inf5153.miniLang.parser.MiniLangLexer;
 import inf5153.miniLang.parser.MiniLangParser;
 import inf5153.miniLang.visitor.EvaluatorVisitor;
+import inf5153.miniLang.visitor.DefUseVisitor;
+import inf5153.miniLang.visitor.DefUseVisitor.AssignInfo;
 
 /**
  * Programme principal 
@@ -45,10 +47,22 @@ public class Principale {
         ParseTree parseTree = parsing(source);
         System.out.println("End Parsing: " + source);
 
-        
         if (parseTree != null) {
+            // Evaluate the parse tree
             EvaluatorVisitor evaluator = new EvaluatorVisitor();
-            evaluator.visit(parseTree);  
+            evaluator.visit(parseTree);
+
+         // Perform def-use analysis
+            DefUseVisitor defUseVisitor = new DefUseVisitor();
+            defUseVisitor.visit(parseTree);
+            List<AssignInfo> assignInfos = defUseVisitor.getAssignInfos();
+
+            for (AssignInfo info : assignInfos) {
+                System.out.println("Definis: " + info.getDefinedVariable());
+                if (!info.getUsedVariables().isEmpty()) {
+                    System.out.println("Utilise: " + info.getUsedVariables());
+                }
+            }
         }
     }
 }
