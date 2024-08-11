@@ -2,6 +2,7 @@ package inf5153.miniLang.main;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -58,9 +59,13 @@ public class Principale {
             List<AssignInfo> assignInfos = defUseVisitor.getAssignInfos();
 
             for (AssignInfo info : assignInfos) {
-                System.out.println("Lecture: " + info.getDefinedVariable());
-                if (!info.getUsedVariables().isEmpty()) {
-                    System.out.println("Ecriture: " + info.getUsedVariables());
+            	
+                Set<String> usedVars = info.getUsedVariables();
+                String definedVar = info.getDefinedVariable();
+                if (!usedVars.isEmpty()) {
+                    System.out.println("Definis: " + definedVar+" ---> Utilise: " + usedVars);
+                } else {
+                    System.out.println("Definis: " + definedVar);
                 }
             }
         }
