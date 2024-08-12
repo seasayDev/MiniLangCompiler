@@ -43,17 +43,22 @@ public class Principale {
      * @param args
      */
     public static void main(String[] args) {
-        String source = "source/Exemple1.mnl";
+        String source = "source/Exemple2.mnl";
         System.out.println("Start Processing: " + source);
         ParseTree parseTree = parsing(source);
         System.out.println("End Parsing: " + source);
 
         if (parseTree != null) {
             // Evaluate the parse tree
+            System.out.println("\nTache 1: Evaluateur de code:");
+
             EvaluatorVisitor evaluator = new EvaluatorVisitor();
             evaluator.visit(parseTree);
 
+            
+            
          // Perform def-use analysis
+            System.out.println("\nTache 3: Analyse  Def-Use:\n");
             DefUseVisitor defUseVisitor = new DefUseVisitor();
             defUseVisitor.visit(parseTree);
             List<AssignInfo> assignInfos = defUseVisitor.getAssignInfos();

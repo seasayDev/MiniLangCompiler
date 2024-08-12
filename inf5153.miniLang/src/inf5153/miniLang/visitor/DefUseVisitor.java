@@ -33,7 +33,7 @@ public class DefUseVisitor extends MiniLangBaseVisitor<Void> {
     public Void visitStatemntAssign(MiniLangParser.StatemntAssignContext ctx) {
         String definedVar = ctx.IDENTIFIER().getText();
         Set<String> usedVars = new HashSet<>();
-        collectUsedVariables(ctx.expr, usedVars);
+        collectUsedVariables(ctx.expr, usedVars); 
         assignInfos.add(new AssignInfo(definedVar, usedVars));
         return null;
     }
@@ -44,6 +44,9 @@ public class DefUseVisitor extends MiniLangBaseVisitor<Void> {
             if (primaryCtx.primary() instanceof MiniLangParser.IdentifierContext) {
                 MiniLangParser.IdentifierContext idCtx = (MiniLangParser.IdentifierContext) primaryCtx.primary();
                 usedVars.add(idCtx.IDENTIFIER().getText());
+            } else if (primaryCtx.primary() instanceof MiniLangParser.ExprParenthContext) {
+                MiniLangParser.ExprParenthContext parenthCtx = (MiniLangParser.ExprParenthContext) primaryCtx.primary();
+                collectUsedVariables(parenthCtx.expression(), usedVars);
             }
         } else if (exprCtx instanceof MiniLangParser.BinaryExprAddContext) {
             MiniLangParser.BinaryExprAddContext binaryCtx = (MiniLangParser.BinaryExprAddContext) exprCtx;
