@@ -1,6 +1,7 @@
 package inf5153.miniLang.main;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 
@@ -8,15 +9,16 @@ import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+
 import inf5153.miniLang.parser.MiniLangLexer;
 import inf5153.miniLang.parser.MiniLangParser;
 import inf5153.miniLang.visitor.EvaluatorVisitor;
 import inf5153.miniLang.visitor.DefUseVisitor;
 import inf5153.miniLang.visitor.DefUseVisitor.AssignInfo;
+import inf5153.miniLang.visitor.JavaCodeGeneratorVisitor;
 
 /**
- * Programme principal 
- * 
+ * Programme principal
  */
 public class Principale {
 
@@ -43,13 +45,14 @@ public class Principale {
      * @param args
      */
     public static void main(String[] args) {
-        String source = "source/Exemple1.mnl";
+        String source = "source/Exemple2.mnl";
+        String fileName = source.substring(source.lastIndexOf('/') + 1);
         System.out.println("Start Processing: " + source);
         ParseTree parseTree = parsing(source);
         System.out.println("End Parsing: " + source);
 
         if (parseTree != null) {
-            // Evaluate the parse tree
+            // Évaluation de l'arbre de syntaxe
             EvaluatorVisitor evaluator = new EvaluatorVisitor();
             evaluator.visit(parseTree);
 
@@ -57,6 +60,8 @@ public class Principale {
             DefUseVisitor defUseVisitor = new DefUseVisitor();
             defUseVisitor.visit(parseTree);
             List<AssignInfo> assignInfos = defUseVisitor.getAssignInfos();
+            
+            System.out.println("\nDef-Use:\n");
 
             for (AssignInfo info : assignInfos) {
             	
@@ -67,6 +72,22 @@ public class Principale {
                 } else {
                     System.out.println("Definis: " + definedVar);
                 }
+            }
+
+
+            // Génération du code Java
+            JavaCodeGeneratorVisitor codeGenerator = new JavaCodeGeneratorVisitor();
+            String className = codeGenerator.generateJavaCode(fileName);
+            codeGenerator.visit(parseTree);
+            String javaCode = codeGenerator.finishJavaCode();
+
+            System.out.println("\nCode Java Généré:\n\n" + javaCode);
+
+            // Écrire le code dans un fichier
+            try (PrintWriter out = new PrintWriter("src/inf5153/miniLang/javaGeneration/" + className + ".java")) {
+                out.println(javaCode);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
