@@ -10,7 +10,7 @@ import inf5153.miniLang.parser.ASTBuilder;
 import inf5153.miniLang.parser.MiniLangLexer;
 import inf5153.miniLang.parser.MiniLangParser;
 import inf5153.miniLang.visitor.EvaluatorVisitor;
-import inf5153.miniLang.javaGenerator.GeneratorVisitor;
+import inf5153.miniLang.visitor.GeneratorVisitor;
 
 /**
  * Programme principal 
@@ -41,16 +41,17 @@ public class Principale {
      * @param args
      */
     public static void main(String[] args) {
-        String source = "source/Exemple2.mnl";
+        String source = "source/Exemple1.mnl";
+        String fileName = source.substring(source.lastIndexOf('/') + 1);
         System.out.println("Start Processing: " + source);
         ParseTree parseTree = parsing(source);
         System.out.println("End Parsing: " + source);
 
         
         if (parseTree != null) {
-            EvaluatorVisitor evaluator = new EvaluatorVisitor();
-            evaluator.visit(parseTree);  
-            GeneratorVisitor generator = new GeneratorVisitor();
+          //  EvaluatorVisitor evaluator = new EvaluatorVisitor();
+         //   evaluator.visit(parseTree);  
+            GeneratorVisitor generator = new GeneratorVisitor(fileName);
             generator.visit(parseTree);
         }
     }
