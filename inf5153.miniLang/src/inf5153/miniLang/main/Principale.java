@@ -74,14 +74,13 @@ public class Principale {
 
                     switch (choice) {
                         case 1:
-                            
                             System.out.println("\nTache 1: Evaluateur de code:");
                             EvaluatorVisitor evaluator = new EvaluatorVisitor();
                             evaluator.visit(parseTree);
                             
                             break;
                         case 2:
-                            System.out.println("Traitement de tache 2...");
+                            System.out.println("\nTache 2: Generation de code Java\n");
                             GeneratorJavaVisitor generator = new GeneratorJavaVisitor(fileName);
                             generator.visit(parseTree);
                             break;

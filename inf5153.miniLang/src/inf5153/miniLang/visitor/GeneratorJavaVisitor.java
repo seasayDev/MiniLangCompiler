@@ -84,7 +84,7 @@ public class GeneratorJavaVisitor extends MiniLangBaseVisitor<String> {
 	@Override
 	public String visitStatemntRead(MiniLangParser.StatemntReadContext ctx) {
 
-		output2.append("\n\t\tScanner scanner = new Scanner(System.in);\n");
+		output2.append("\n\t\tjava.util.Scanner scanner = new java.util.Scanner(System.in);\n");
 
 		String msg = ctx.STRINGLITERAL().getText();
 		String identifiant = ctx.IDENTIFIER().getText();
