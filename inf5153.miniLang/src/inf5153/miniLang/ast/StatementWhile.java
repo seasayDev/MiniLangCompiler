@@ -1,5 +1,8 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
+
+
 /**
  * Boucle While 
  * 
@@ -15,4 +18,17 @@ public class StatementWhile  extends Statement {
 		this.condition = condition;
 		this.blockWhile = blockWhile;
 	} 
+	
+	
+	public ExpressionComparaison getCondition() {
+		return condition;
+	}
+	
+	public Block getBlockWhile() {
+		return blockWhile;
+	}
+	
+	public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitWhile(this);
+    }
 }

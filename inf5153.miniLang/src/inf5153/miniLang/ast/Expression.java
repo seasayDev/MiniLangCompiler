@@ -1,5 +1,7 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
+
 
 /**
  * Classe générale représentant les expressions 
@@ -44,5 +46,7 @@ public abstract class Expression implements ElementAST {
 			throw new RuntimeException("Erreur de type de donnée") ; 
 		}
 	}
+	
+	 public abstract <T> T accept(AstVisitor<T> visitor);
 
 }

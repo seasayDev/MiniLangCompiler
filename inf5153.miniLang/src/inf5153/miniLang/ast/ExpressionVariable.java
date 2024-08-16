@@ -1,5 +1,7 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
+
 /**
  * 
  * Une variable  
@@ -17,5 +19,9 @@ public class ExpressionVariable extends Expression {
 	public String getVarName() {
 		return varName;
 	}
+	
+	public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitVariable(this);
+    }
 
 }

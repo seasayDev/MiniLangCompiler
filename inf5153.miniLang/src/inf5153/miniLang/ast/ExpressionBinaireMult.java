@@ -1,5 +1,6 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
 
 /**
  * Expression binaire : multiplication 
@@ -12,4 +13,7 @@ public class ExpressionBinaireMult extends ExpressionBinaire{
 		super(leftExpresion, rightExpresion);
 	}
 	
+	public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitBinaryMultiplication(this);
+    }
 }

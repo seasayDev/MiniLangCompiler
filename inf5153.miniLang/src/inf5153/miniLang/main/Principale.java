@@ -6,8 +6,6 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Set;
 
-
-
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -15,12 +13,11 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import inf5153.miniLang.parser.ASTBuilder;
 import inf5153.miniLang.parser.MiniLangLexer;
 import inf5153.miniLang.parser.MiniLangParser;
-import inf5153.miniLang.visitor.EvaluatorVisitor;
-import inf5153.miniLang.visitor.GeneratorJavaVisitor;
+//import inf5153.miniLang.visitor.EvaluatorVisitor;
+//import inf5153.miniLang.visitor.GeneratorJavaVisitor;
 import inf5153.miniLang.visitor.DefUseVisitor;
 import inf5153.miniLang.visitor.DefUseVisitor.AssignInfo;
-
-
+import inf5153.miniLang.ast.CompilationUnit;
 
 /**
  * Programme principal 
@@ -58,7 +55,7 @@ public class Principale {
     	Scanner scanner = new Scanner(System.in);
         int choice = 0;
     	
-        String source = "source/Exemple2.mnl";
+        String source = "source/Exemple1.mnl";
         String fileName = source.substring(source.lastIndexOf('/') + 1);
         System.out.println("Start Processing: " + source);
         ParseTree parseTree = parsing(source);
@@ -75,20 +72,18 @@ public class Principale {
                     switch (choice) {
                         case 1:
                             System.out.println("\nTache 1: Evaluateur de code:");
-                            EvaluatorVisitor evaluator = new EvaluatorVisitor();
-                            evaluator.visit(parseTree);
-                            
+                     
                             break;
                         case 2:
                             System.out.println("\nTache 2: Generation de code Java\n");
-                            GeneratorJavaVisitor generator = new GeneratorJavaVisitor(fileName);
-                            generator.visit(parseTree);
+                            
                             break;
                         case 3:
-                      
                             System.out.println("\nTache 3: Analyse  Def-Use:\n");
+                            ASTBuilder astBuilderDefUse = new ASTBuilder();
+                            CompilationUnit astDefUse = (CompilationUnit) astBuilderDefUse.visit(parseTree);
                             DefUseVisitor defUseVisitor = new DefUseVisitor();
-                            defUseVisitor.visit(parseTree);
+                            defUseVisitor.visitCompilationUnit(astDefUse);
                             List<AssignInfo> assignInfos = defUseVisitor.getAssignInfos();
 
                             for (AssignInfo info : assignInfos) {
@@ -101,6 +96,11 @@ public class Principale {
                                     System.out.println("Definis: " + definedVar);
                                 }
                             }
+
+                            // Résumé des variables
+                            System.out.println("\nRésumé des variables:\n");
+                            System.out.println("Variables définies: " + defUseVisitor.getAllDefinedVariables());
+                            System.out.println("Variables utilisées: " + defUseVisitor.getAllUsedVariables());
                             break;
                         case 4:
                             System.out.println("Au revoir!");
@@ -115,17 +115,5 @@ public class Principale {
             } while (choice != 4);
             scanner.close();
         }
-        	
-        	
-        	
-        	
-        	
-        	
-        	
-             
-           
-           
-            
-        
     }
 }

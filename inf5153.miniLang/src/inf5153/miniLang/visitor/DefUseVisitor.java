@@ -5,11 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import inf5153.miniLang.parser.MiniLangBaseVisitor;
-import inf5153.miniLang.parser.MiniLangParser;
+import inf5153.miniLang.ast.*;
 
-public class DefUseVisitor extends MiniLangBaseVisitor<Void> {
+public class DefUseVisitor implements AstVisitor<Void> {
     private List<AssignInfo> assignInfos = new ArrayList<>();
+    private Set<String> allDefinedVariables = new HashSet<>();
+    private Set<String> allUsedVariables = new HashSet<>();
 
     public static class AssignInfo {
         private String definedVariable;
@@ -30,40 +31,146 @@ public class DefUseVisitor extends MiniLangBaseVisitor<Void> {
     }
 
     @Override
-    public Void visitStatemntAssign(MiniLangParser.StatemntAssignContext ctx) {
-        String definedVar = ctx.IDENTIFIER().getText();
+    public Void visitAssignment(StatementAssign statementAssign) {
+        String definedVar = statementAssign.getVariableName();
         Set<String> usedVars = new HashSet<>();
-        collectUsedVariables(ctx.expr, usedVars); 
+        collectUsedVariables(statementAssign.getExpression(), usedVars);
         assignInfos.add(new AssignInfo(definedVar, usedVars));
+        allDefinedVariables.add(definedVar);
+        allUsedVariables.addAll(usedVars);
         return null;
     }
 
-    private void collectUsedVariables(MiniLangParser.ExpressionContext exprCtx, Set<String> usedVars) {
-        if (exprCtx instanceof MiniLangParser.PrimaryExprContext) {
-            MiniLangParser.PrimaryExprContext primaryCtx = (MiniLangParser.PrimaryExprContext) exprCtx;
-            if (primaryCtx.primary() instanceof MiniLangParser.IdentifierContext) {
-                MiniLangParser.IdentifierContext idCtx = (MiniLangParser.IdentifierContext) primaryCtx.primary();
-                usedVars.add(idCtx.IDENTIFIER().getText());
-            } else if (primaryCtx.primary() instanceof MiniLangParser.ExprParenthContext) {
-                MiniLangParser.ExprParenthContext parenthCtx = (MiniLangParser.ExprParenthContext) primaryCtx.primary();
-                collectUsedVariables(parenthCtx.expression(), usedVars);
-            }
-        } else if (exprCtx instanceof MiniLangParser.BinaryExprAddContext) {
-            MiniLangParser.BinaryExprAddContext binaryCtx = (MiniLangParser.BinaryExprAddContext) exprCtx;
-            collectUsedVariables(binaryCtx.left, usedVars);
-            collectUsedVariables(binaryCtx.right, usedVars);
-        } else if (exprCtx instanceof MiniLangParser.BinaryExprMultContext) {
-            MiniLangParser.BinaryExprMultContext binaryCtx = (MiniLangParser.BinaryExprMultContext) exprCtx;
-            collectUsedVariables(binaryCtx.left, usedVars);
-            collectUsedVariables(binaryCtx.right, usedVars);
-        } else if (exprCtx instanceof MiniLangParser.BinaryExprCompContext) {
-            MiniLangParser.BinaryExprCompContext binaryCtx = (MiniLangParser.BinaryExprCompContext) exprCtx;
-            collectUsedVariables(binaryCtx.left, usedVars);
-            collectUsedVariables(binaryCtx.right, usedVars);
+    private void collectUsedVariables(Expression expr, Set<String> usedVars) {
+        if (expr instanceof ExpressionVariable) {
+            usedVars.add(((ExpressionVariable) expr).getVarName());
+            allUsedVariables.add(((ExpressionVariable) expr).getVarName());
+        } else if (expr instanceof ExpressionBinaire) {
+            collectUsedVariables(((ExpressionBinaire) expr).getLeftExpresion(), usedVars);
+            collectUsedVariables(((ExpressionBinaire) expr).getRightExpresion(), usedVars);
+        } else if (expr instanceof ExpressionParenthesee) {
+            collectUsedVariables(((ExpressionParenthesee) expr).getExpression(), usedVars);
         }
+    }
+
+    @Override
+    public Void visitBinaryExpression(ExpressionBinaire expressionBinaire) {
+        collectUsedVariables(expressionBinaire.getLeftExpresion(), new HashSet<>());
+        collectUsedVariables(expressionBinaire.getRightExpresion(), new HashSet<>());
+        return null;
+    }
+
+    @Override
+    public Void visitParenthesized(ExpressionParenthesee expressionParenthesee) {
+        collectUsedVariables(expressionParenthesee.getExpression(), new HashSet<>());
+        return null;
+    }
+
+    @Override
+    public Void visitVariable(ExpressionVariable expressionVariable) {
+        return null;
+    }
+
+    @Override
+    public Void visitBinaryAddition(ExpressionBinaireAdd expressionBinaireAdd) {
+        collectUsedVariables(expressionBinaireAdd.getLeftExpresion(), new HashSet<>());
+        collectUsedVariables(expressionBinaireAdd.getRightExpresion(), new HashSet<>());
+        return null;
+    }
+
+    @Override
+    public Void visitComparison(ExpressionComparaison expressionComparaison) {
+        collectUsedVariables(expressionComparaison.getLeftExpresion(), new HashSet<>());
+        collectUsedVariables(expressionComparaison.getRightExpresion(), new HashSet<>());
+        return null;
+    }
+
+    @Override
+    public Void visitBlock(Block block) {
+        for (Statement statement : block) {
+            statement.accept(this);
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitCompilationUnit(CompilationUnit compilationUnit) {
+        return compilationUnit.getBlock().accept(this);
+    }
+
+    @Override
+    public Void visitPrint(StatementPrint statementPrint) {
+        return null;
+    }
+
+    @Override
+    public Void visitIfStatement(StatementIF statementIF) {
+        statementIF.getCondition().accept(this);
+        statementIF.getBlockThen().accept(this);
+        if (statementIF.getBlockElse() != null) {
+            statementIF.getBlockElse().accept(this);
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitWhile(StatementWhile statementWhile) {
+        statementWhile.getCondition().accept(this);
+        statementWhile.getBlockWhile().accept(this);
+        return null;
+    }
+
+    @Override
+    public Void visitRead(StatementRead statementRead) {
+        return null;
+    }
+
+    @Override
+    public Void visitNumber(ExpressionNumber expressionNumber) {
+        return null;
+    }
+
+    @Override
+    public Void visitUnary(ExpressionUnaire expressionUnaire) {
+        collectUsedVariables(expressionUnaire.getExpression(), new HashSet<>());
+        return null;
+    }
+
+    @Override
+    public Void visitString(ExpressionString expressionString) {
+        return null;
+    }
+
+    @Override
+    public Void visitBinarySubtraction(ExpressionBinaireMinus expressionBinaireMinus) {
+        collectUsedVariables(expressionBinaireMinus.getLeftExpresion(), new HashSet<>());
+        collectUsedVariables(expressionBinaireMinus.getRightExpresion(), new HashSet<>());
+        return null;
+    }
+
+    @Override
+    public Void visitBinaryMultiplication(ExpressionBinaireMult expressionBinaireMult) {
+        collectUsedVariables(expressionBinaireMult.getLeftExpresion(), new HashSet<>());
+        collectUsedVariables(expressionBinaireMult.getRightExpresion(), new HashSet<>());
+        return null;
+    }
+
+    @Override
+    public Void visitBinaryDivision(ExpressionBinaireDiv expressionBinaireDiv) {
+        collectUsedVariables(expressionBinaireDiv.getLeftExpresion(), new HashSet<>());
+        collectUsedVariables(expressionBinaireDiv.getRightExpresion(), new HashSet<>());
+        return null;
     }
 
     public List<AssignInfo> getAssignInfos() {
         return assignInfos;
+    }
+
+    public Set<String> getAllDefinedVariables() {
+        return allDefinedVariables;
+    }
+
+    public Set<String> getAllUsedVariables() {
+        return allUsedVariables;
     }
 }

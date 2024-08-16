@@ -1,36 +1,26 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
- * Modélise un bloc d'instructions  
- * 
- * 
- * @author elhachemi Alikacem
- */
-public class Block implements ElementAST {
+public class Block implements ElementAST, Iterable<Statement> {
+    private ArrayList<Statement> listStatements = new ArrayList<>();
 
-	private ArrayList<Statement> listStatements = new ArrayList<>() ; 
-	
-	public Block(ArrayList<Statement> listStatements) {
-		this.listStatements = listStatements;
-	}
+    public Block(ArrayList<Statement> listStatements) {
+        this.listStatements = listStatements;
+    }
 
-	/**
-	 * 
-	 * @param statement
-	 */
-	public void addStatement(Statement statement) {
-		listStatements.add(statement) ; 
-	}
-	
-	/**
-	 * Retourne un itérateur de la liste des Statements du block  
-	 * @return
-	 */
-	public Iterator<Statement> iterator() {
-		return listStatements.iterator() ; 
-	}
-	
+    public void addStatement(Statement statement) {
+        listStatements.add(statement);
+    }
+
+    @Override
+    public Iterator<Statement> iterator() {
+        return listStatements.iterator();
+    }
+
+    public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitBlock(this);
+    }
 }

@@ -1,5 +1,8 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
+
+
 /**
  * Modèlise l'instruction Print 
  * 
@@ -12,5 +15,13 @@ public class StatementPrint  extends Statement {
 		super();
 		this.expression = expression;
 	}
+	
+	public Expression getExpression() {
+		return expression;
+	}
+	
+	public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitPrint(this);
+    }
 	
 }

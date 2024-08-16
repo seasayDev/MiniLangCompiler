@@ -1,5 +1,8 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
+
+
 /**
  * Expression correspondant à un nombre (entier) 
  *  
@@ -12,5 +15,17 @@ public class ExpressionNumber extends Expression {
 	public ExpressionNumber(Integer value) {
 		super();
 		this.value = value;
+		setValue(value);
 	} 
+	
+	
+	@Override
+    public Integer intValue() {
+        return value;
+    }
+	
+	
+	public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitNumber(this);
+    }
 }

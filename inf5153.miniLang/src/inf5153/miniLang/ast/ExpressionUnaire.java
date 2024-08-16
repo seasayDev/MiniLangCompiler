@@ -1,5 +1,6 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
 
 /**
  * 
@@ -22,4 +23,16 @@ public class ExpressionUnaire extends Expression {
 		this.operateur = operateur;
 		this.expression = expression;
 	}
+	
+	public Operator getOperateur() {
+		return operateur;
+	}
+	
+	public Expression getExpression() {
+		return expression;
+	}
+	
+	public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitUnary(this);
+    }
 }

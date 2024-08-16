@@ -1,5 +1,8 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
+
+
 
 /**
  * Modélise l'affectation 
@@ -27,4 +30,8 @@ public class StatementAssign extends Statement {
 		return expression;
 	}
 	
+	
+	public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitAssignment(this);
+    }
 }

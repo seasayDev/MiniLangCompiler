@@ -1,5 +1,8 @@
 package inf5153.miniLang.ast;
 
+import inf5153.miniLang.visitor.AstVisitor;
+
+
 /**
  * Represente une condition, 
  * 
@@ -17,5 +20,13 @@ public class ExpressionComparaison extends ExpressionBinaire {
 		super(leftExpresion, rightExpresion);
 		this.comparaisonOper = oper ; 
 	}
+	
+	public Operator getComparaisonOper() {
+		return comparaisonOper;
+	}
+	
+	public <T> T accept(AstVisitor<T> visitor) {
+        return visitor.visitComparison(this);
+    }
 
 }
