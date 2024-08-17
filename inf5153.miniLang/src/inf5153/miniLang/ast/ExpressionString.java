@@ -19,4 +19,9 @@ public class ExpressionString  extends Expression {
         return visitor.visitString(this);
     }
 	
+	
+	public String getValueAsString() {
+	    return value;
+	}
+
 }

@@ -14,7 +14,7 @@ public abstract class Expression implements ElementAST {
 	 * Peut-être utilisé pour stocker la valeur de l'expression 
 	 * 
 	 */
-	private Object value = null ; 
+	private Object value = null ;  
 	
 	public void setValue(Object value) {
 		this.value = value ; 
@@ -46,6 +46,7 @@ public abstract class Expression implements ElementAST {
 			throw new RuntimeException("Erreur de type de donnée") ; 
 		}
 	}
+	
 	
 	 public abstract <T> T accept(AstVisitor<T> visitor);
 

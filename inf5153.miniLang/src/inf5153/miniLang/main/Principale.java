@@ -18,6 +18,7 @@ import inf5153.miniLang.parser.MiniLangParser;
 import inf5153.miniLang.visitor.DefUseVisitor;
 import inf5153.miniLang.visitor.DefUseVisitor.AssignInfo;
 import inf5153.miniLang.ast.CompilationUnit;
+import inf5153.miniLang.visitor.GeneratorJavaVisitor;
 
 /**
  * Programme principal 
@@ -76,6 +77,10 @@ public class Principale {
                             break;
                         case 2:
                             System.out.println("\nTache 2: Generation de code Java\n");
+                            ASTBuilder astBuilderDefUse2 = new ASTBuilder();
+                            CompilationUnit astDefUse2 = (CompilationUnit) astBuilderDefUse2.visit(parseTree);
+                            GeneratorJavaVisitor testing = new GeneratorJavaVisitor(fileName);
+                            testing.visitCompilationUnit(astDefUse2);
                             
                             break;
                         case 3:

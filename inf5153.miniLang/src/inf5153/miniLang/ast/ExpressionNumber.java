@@ -24,6 +24,11 @@ public class ExpressionNumber extends Expression {
         return value;
     }
 	
+	public String getValueAsString() {
+	    return Integer.toString(value);
+	}
+
+	
 	
 	public <T> T accept(AstVisitor<T> visitor) {
         return visitor.visitNumber(this);

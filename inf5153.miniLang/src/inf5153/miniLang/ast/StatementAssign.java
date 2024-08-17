@@ -2,8 +2,6 @@ package inf5153.miniLang.ast;
 
 import inf5153.miniLang.visitor.AstVisitor;
 
-
-
 /**
  * Modélise l'affectation 
  * 
@@ -12,26 +10,25 @@ import inf5153.miniLang.visitor.AstVisitor;
  */
 
 public class StatementAssign extends Statement {
-	private String variableName  ; // left hand side 
-	private Expression expression ; // right hand side  
-	
-	
-	public StatementAssign(String variableName, Expression expression) {
-		super();
-		this.variableName = variableName;
-		this.expression = expression;
-	}
+    private String variableName; // left hand side 
+    private Expression expression; // right hand side  
 
-	public String getVariableName() {
-		return variableName;
-	}
+    public StatementAssign(String variableName, Expression expression) {
+        super();
+        this.variableName = variableName;
+        this.expression = expression;
+    }
 
-	public Expression getExpression() {
-		return expression;
-	}
-	
-	
-	public <T> T accept(AstVisitor<T> visitor) {
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public Expression getExpression() {
+        return expression;
+    }
+
+    public <T> T accept(AstVisitor<T> visitor) {
         return visitor.visitAssignment(this);
     }
+
 }
