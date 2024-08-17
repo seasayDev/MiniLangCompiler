@@ -1,3 +1,7 @@
+/**
+ * La classe EvaluatorVisitor évalue les expressions et instructions d'un programme MiniLang.
+ * Elle utilise un environnement de variables pour stocker et manipuler les valeurs.
+ */
 package inf5153.miniLang.visitor;
 
 import inf5153.miniLang.ast.*;

@@ -1,3 +1,7 @@
+/*
+ * La classe GeneratorJavaVisitor implémente le patron de conception Visiteur pour
+ * parcourir l'AST et générer du code Java équivalent.
+ */
 package inf5153.miniLang.visitor;
 
 import java.io.BufferedWriter;
@@ -8,10 +12,7 @@ import java.util.Map;
 
 import inf5153.miniLang.ast.*;
 
-/*
- * La classe GeneratorJavaVisitor implémente le patron de conception Visiteur pour
- * parcourir l'AST et générer du code Java équivalent.
- */
+
 public class GeneratorJavaVisitor implements AstVisitor<String> {
 
 	private Map<String, String> variables = new HashMap<>();

@@ -1,3 +1,9 @@
+/** 
+ * Cette classe analyse chaque affectation dans le code, enregistre la variable qui est définie et toutes les variables qui sont utilisées 
+ * dans l'expression de l'affectation. Elle conserve une liste des informations d'affectation (AssignInfo) ainsi que des ensembles de 
+ * toutes les variables définies et utilisées dans le programme.
+ */
+
 package inf5153.miniLang.visitor;
 
 import java.util.ArrayList;
@@ -7,11 +13,7 @@ import java.util.Set;
 
 import inf5153.miniLang.ast.*;
 
-/** 
- * Cette classe analyse chaque affectation dans le code, enregistre la variable qui est définie et toutes les variables qui sont utilisées 
- * dans l'expression de l'affectation. Elle conserve une liste des informations d'affectation (AssignInfo) ainsi que des ensembles de 
- * toutes les variables définies et utilisées dans le programme.
- */
+
 
 public class DefUseVisitor implements AstVisitor<Void> {
     private List<AssignInfo> assignInfos = new ArrayList<>();

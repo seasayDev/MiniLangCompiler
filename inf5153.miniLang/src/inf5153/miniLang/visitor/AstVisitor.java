@@ -1,3 +1,7 @@
+/**
+ * Cette interface définit un visiteur pour parcourir et traiter les différents éléments 
+ * d'un arbre syntaxique abstrait (AST) dans le cadre du langage miniLang.
+ */
 package inf5153.miniLang.visitor;
 
 import inf5153.miniLang.ast.*;
