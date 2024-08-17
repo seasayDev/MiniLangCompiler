@@ -41,7 +41,6 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		output.append("\n").append(output2);
 		output.append("\t}\n");
 		output.append("}\n");
-		System.out.println(output);
 		ecrireFichier();
 		return output.toString();
 	}
