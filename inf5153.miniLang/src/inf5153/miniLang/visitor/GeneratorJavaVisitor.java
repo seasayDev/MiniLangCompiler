@@ -12,7 +12,6 @@ import inf5153.miniLang.ast.*;
  * La classe GeneratorJavaVisitor implémente le patron de conception Visiteur pour
  * parcourir l'AST et générer du code Java équivalent.
  */
-
 public class GeneratorJavaVisitor implements AstVisitor<String> {
 
 	private Map<String, String> variables = new HashMap<>();
@@ -20,10 +19,16 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 	private StringBuilder output2 = new StringBuilder();
 	private String className;
 
+	/**
+	 * Constructeur de la classe GeneratorJavaVisitor.
+	 */
 	public GeneratorJavaVisitor(String fileName) {
 		this.className = "Gen" + fileName.substring(0, fileName.lastIndexOf('.'));
 	}
 
+	/**
+	 * Visite un bloc de code (une liste d'instructions).
+	 */
 	@Override
 	public String visitBlock(Block block) {
 		for (Statement statement : block) {
@@ -32,6 +37,10 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return null;
 	}
 
+	/**
+	 * Visite l'unité de compilation principale et génère la structure de la classe
+	 * Java.
+	 */
 	@Override
 	public String visitCompilationUnit(CompilationUnit compilationUnit) {
 		output.append("package inf5153.miniLang.javaGeneration;\n");
@@ -42,14 +51,20 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		output.append("\t}\n");
 		output.append("}\n");
 		ecrireFichier();
-		return output.toString();
+		return null;
 	}
 
+	/**
+	 * Visite une expression binaire générique.
+	 */
 	@Override
 	public String visitBinaryExpression(ExpressionBinaire expressionBinaire) {
 		return null;
 	}
 
+	/**
+	 * Visite une addition binaire et génère le code Java correspondant.
+	 */
 	@Override
 	public String visitBinaryAddition(ExpressionBinaireAdd expressionBinaireAdd) {
 		String left = expressionBinaireAdd.getLeftExpresion().accept(this);
@@ -57,6 +72,9 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return left + " + " + right;
 	}
 
+	/**
+	 * Visite une division binaire et génère le code Java correspondant.
+	 */
 	@Override
 	public String visitBinaryDivision(ExpressionBinaireDiv expressionBinaireDiv) {
 		String left = expressionBinaireDiv.getLeftExpresion().accept(this);
@@ -64,6 +82,9 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return "(" + left + ")" + " / " + right;
 	}
 
+	/**
+	 * Visite une soustraction binaire et génère le code Java correspondant.
+	 */
 	@Override
 	public String visitBinarySubtraction(ExpressionBinaireMinus expressionBinaireMinus) {
 		String left = expressionBinaireMinus.getLeftExpresion().accept(this);
@@ -71,6 +92,9 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return left + " - " + right;
 	}
 
+	/**
+	 * Visite une multiplication binaire et génère le code Java correspondant.
+	 */
 	@Override
 	public String visitBinaryMultiplication(ExpressionBinaireMult expressionBinaireMult) {
 		String left = expressionBinaireMult.getLeftExpresion().accept(this);
@@ -78,6 +102,9 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return left + " * " + right;
 	}
 
+	/**
+	 * Visite une expression de comparaison et génère le code Java correspondant.
+	 */
 	@Override
 	public String visitComparison(ExpressionComparaison expressionComparaison) {
 		String left = expressionComparaison.getLeftExpresion().accept(this);
@@ -85,31 +112,56 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return left + " " + expressionComparaison.getComparaisonOperAsString() + " " + right;
 	}
 
+	/**
+	 * Visite une expression numérique et génère la valeur numérique sous forme de
+	 * chaîne de caractères.
+	 */
 	@Override
 	public String visitNumber(ExpressionNumber expressionNumber) {
 		return expressionNumber.getValueAsString();
 	}
 
+	/**
+	 * Visite une expression entourée de parenthèses et génère le code Java
+	 * correspondant.
+	 */
 	@Override
 	public String visitParenthesized(ExpressionParenthesee expressionParenthesee) {
 		return "(" + expressionParenthesee.getExpression().accept(this) + ")";
 	}
 
+	/**
+	 * Visite une expression de chaîne de caractères et génère la valeur sous forme
+	 * de chaîne de caractères.
+	 */
 	@Override
 	public String visitString(ExpressionString expressionString) {
-		return   expressionString.getValueAsString() ;
+		return expressionString.getValueAsString();
 	}
 
+	/**
+	 * Visite une expression unaire (par exemple, une négation) et génère le code
+	 * Java correspondant.
+	 */
 	@Override
 	public String visitUnary(ExpressionUnaire expressionUnaire) {
 		return expressionUnaire.getOperateurAsString() + expressionUnaire.getExpression().accept(this);
 	}
 
+	/**
+	 * Visite une variable et génère le nom de la variable sous forme de chaîne de
+	 * caractères.
+	 */
 	@Override
 	public String visitVariable(ExpressionVariable expressionVariable) {
 		return expressionVariable.getVarName();
 	}
 
+	/**
+	 * Visite une instruction d'assignation et génère le code Java correspondant. Si
+	 * la variable n'a pas encore été déclarée, elle est ajoutée à la liste des
+	 * variables et déclarée en Java.
+	 */
 	@Override
 	public String visitAssignment(StatementAssign statementAssign) {
 		String variableName = statementAssign.getVariableName();
@@ -122,6 +174,10 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return null;
 	}
 
+	/**
+	 * Visite une instruction conditionnelle (if-else) et génère le code Java
+	 * correspondant.
+	 */
 	@Override
 	public String visitIfStatement(StatementIF statementIF) {
 		String condition = statementIF.getCondition().accept(this);
@@ -137,6 +193,10 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return null;
 	}
 
+	/**
+	 * Visite une instruction d'affichage (print) et génère le code Java
+	 * correspondant.
+	 */
 	@Override
 	public String visitPrint(StatementPrint statementPrint) {
 		String expression = statementPrint.getExpression().accept(this);
@@ -145,6 +205,10 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return null;
 	}
 
+	/**
+	 * Visite une instruction de lecture (read) et génère le code Java
+	 * correspondant.
+	 */
 	@Override
 	public String visitRead(StatementRead statementRead) {
 		output2.append("\n\t\tScanner scanner = new Scanner(System.in);\n");
@@ -156,6 +220,9 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		return null;
 	}
 
+	/**
+	 * Visite une boucle while et génère le code Java correspondant.
+	 */
 	@Override
 	public String visitWhile(StatementWhile statementWhile) {
 		String condition = statementWhile.getCondition().accept(this);
@@ -165,23 +232,23 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 		output2.append("\t\t}\n");
 		return null;
 	}
-	
-	  /**
-     * Écrit la classe Java générée dans un fichier .java.
-     * Le fichier est écrit dans le répertoire spécifié par la variable chemin.
-     * 
-     * @return null
-     */
+
+	/**
+	 * Écrit la classe Java générée dans un fichier .java. Le fichier est écrit dans
+	 * le répertoire spécifié par la variable chemin.
+	 * 
+	 * @return null
+	 */
 	public String ecrireFichier() {
-	    String chemin = "src/inf5153/miniLang/javaGeneration/" + className + ".java";
-	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(chemin))) {
-	        writer.write(output.toString());
-	        System.out.println(" Le fichier à été créé, voici son chemin : " + chemin);
-	        return null ;
-	    } catch (IOException e) {
-	        System.err.println("Erreur de la création du fichier : " + e.getMessage());
-	        return null;
-	    }
+		String chemin = "src/inf5153/miniLang/javaGeneration/" + className + ".java";
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(chemin))) {
+			writer.write(output.toString());
+			System.out.println(" Le fichier à été créé, voici son chemin : " + chemin);
+			return null;
+		} catch (IOException e) {
+			System.err.println("Erreur de la création du fichier : " + e.getMessage());
+			return null;
+		}
 	}
 
 }

@@ -20,115 +20,114 @@ import inf5153.miniLang.ast.CompilationUnit;
 import inf5153.miniLang.visitor.GeneratorJavaVisitor;
 
 /**
- * Programme principal 
+ * Programme principal
  * 
  */
 public class Principale {
-	
-    public static final String MENU = "\n\nMenu\nVeuillez choisir une tâche:\n1. tache1: Evaluateur de code\n2. tache2: Generateur de code\n3. tache3: Analyse Def-use\n4. Quitter: ";
 
-    public static ParseTree parsing(String fileName) {
-        ParseTree parseTree = null;
+	public static final String MENU = "\n\nMenu\nVeuillez choisir une tâche:\n1. tache1: Evaluateur de code\n2. tache2: Generateur de code\n3. tache3: Analyse Def-use\n4. Quitter: ";
 
-        try {
-            ANTLRFileStream input = new ANTLRFileStream(fileName);
+	public static ParseTree parsing(String fileName) {
+		ParseTree parseTree = null;
 
-            MiniLangLexer lex = new MiniLangLexer(input);          // Transforme les caractères en tokens
-            CommonTokenStream tokens = new CommonTokenStream(lex); // Un flux de tokens
-            MiniLangParser parser = new MiniLangParser(tokens);    
-            parseTree = parser.compileUnit();
+		try {
+			ANTLRFileStream input = new ANTLRFileStream(fileName);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			MiniLangLexer lex = new MiniLangLexer(input); // Transforme les caractères en tokens
+			CommonTokenStream tokens = new CommonTokenStream(lex); // Un flux de tokens
+			MiniLangParser parser = new MiniLangParser(tokens);
+			parseTree = parser.compileUnit();
 
-        return parseTree;
-    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-    public static void main(String[] args) {
-    	
-    	// Déclaration des variables 
-    	Scanner scanner = new Scanner(System.in);
-        int choice = 0;
-    	
-        String source = "source/Exemple1.mnl";
-        String source2 = "source/Exemple2.mnl";
-        System.out.println("Start Processing: " + source);
-        String fileName = source.substring(source.lastIndexOf('/') + 1);
-        String fileName2 = source2.substring(source2.lastIndexOf('/') + 1);
-        ParseTree parseTree = parsing(source);
-        ParseTree parseTree2 = parsing(source2);
-        System.out.println("End Parsing: " + source);
+		return parseTree;
+	}
 
-        if (parseTree != null) {
-            do {
-                System.out.println(MENU);
-                try {
-                    choice = scanner.nextInt();
+	public static void main(String[] args) {
 
-                    switch (choice) {
-                        case 1:
-                            System.out.println("\nTache 1: Evaluateur de code:");
-                            // Construction de l'AST à partir de l'arbre de syntaxe
-                            ASTBuilder astBuilderEval = new ASTBuilder();
-                            CompilationUnit astEval = (CompilationUnit) astBuilderEval.visit(parseTree2);
+		// Déclaration des variables
+		Scanner scanner = new Scanner(System.in);
+		int choice = 0;
 
-                            // Évaluation de l'AST
-                            EvaluatorVisitor evaluator = new EvaluatorVisitor();
-                            evaluator.visitCompilationUnit(astEval);
-                            break;
-                            
-                        case 2:
-                            System.out.println("\nTache 2: Generation de code Java\n");
+		String source = "source/Exemple1.mnl";
+		String source2 = "source/Exemple2.mnl";
+		System.out.println("Start Processing: " + source);
+		String fileName = source.substring(source.lastIndexOf('/') + 1);
+		String fileName2 = source2.substring(source2.lastIndexOf('/') + 1);
+		ParseTree parseTree = parsing(source);
+		ParseTree parseTree2 = parsing(source2);
+		System.out.println("End Parsing: " + source);
 
-                            ASTBuilder astBuilderDefUse2 = new ASTBuilder();
-                            CompilationUnit astBuilderGen = (CompilationUnit) astBuilderDefUse2.visit(parseTree);
-                            CompilationUnit astBuilderGen2 = (CompilationUnit) astBuilderDefUse2.visit(parseTree2);
-                            GeneratorJavaVisitor generator = new GeneratorJavaVisitor(fileName);
-                            GeneratorJavaVisitor generator2 = new GeneratorJavaVisitor(fileName2);
-                            generator.visitCompilationUnit(astBuilderGen);
-                            generator2.visitCompilationUnit(astBuilderGen2);
-                            
+		if (parseTree != null) {
+			do {
+				System.out.println(MENU);
+				try {
+					choice = scanner.nextInt();
 
-                            break;
-                            
-                        case 3:
-                            System.out.println("\nTache 3: Analyse  Def-Use:\n");
-                            ASTBuilder astBuilderDefUse = new ASTBuilder();
-                            CompilationUnit astDefUse = (CompilationUnit) astBuilderDefUse.visit(parseTree);
-                            DefUseVisitor defUseVisitor = new DefUseVisitor();
-                            defUseVisitor.visitCompilationUnit(astDefUse);
-                            List<AssignInfo> assignInfos = defUseVisitor.getAssignInfos();
+					switch (choice) {
+					case 1:
+						System.out.println("\nTache 1: Evaluateur de code:");
+						// Construction de l'AST à partir de l'arbre de syntaxe
+						ASTBuilder astBuilderEval = new ASTBuilder();
+						CompilationUnit astEval = (CompilationUnit) astBuilderEval.visit(parseTree2);
 
-                            for (AssignInfo info : assignInfos) {
-                                Set<String> usedVars = info.getUsedVariables();
-                                String definedVar = info.getDefinedVariable();
-                                if (!usedVars.isEmpty()) {
-                                    System.out.println("Definis: " + definedVar + " ---> Utilise: " + usedVars);
-                                } else {
-                                    System.out.println("Definis: " + definedVar);
-                                }
-                            }
+						// Évaluation de l'AST
+						EvaluatorVisitor evaluator = new EvaluatorVisitor();
+						evaluator.visitCompilationUnit(astEval);
+						break;
 
-                            // Résumé des variables
-                            System.out.println("\nRésumé des variables:\n");
-                            System.out.println("Variables définies: " + defUseVisitor.getAllDefinedVariables());
-                            System.out.println("Variables utilisées: " + defUseVisitor.getAllUsedVariables());
-                            break;
-                            
-                        case 4:
-                            System.out.println("Au revoir!");
-                            break;
-                            
-                        default:
-                            System.out.println("Option invalide, veuillez réessayer.");
-                    }
-                } catch (InputMismatchException e) {
-                    System.out.println("Entrée invalide. Veuillez entrer un nombre.");
-                    scanner.next(); 
-                }
-            } while (choice != 4);
-            scanner.close();
-        }
-    }
+					case 2:
+						System.out.println("\nTache 2: Generation de code Java\n");
+
+						ASTBuilder astBuilderDefUse2 = new ASTBuilder();
+						CompilationUnit astBuilderGen = (CompilationUnit) astBuilderDefUse2.visit(parseTree);
+						CompilationUnit astBuilderGen2 = (CompilationUnit) astBuilderDefUse2.visit(parseTree2);
+						GeneratorJavaVisitor generator = new GeneratorJavaVisitor(fileName);
+						GeneratorJavaVisitor generator2 = new GeneratorJavaVisitor(fileName2);
+						generator.visitCompilationUnit(astBuilderGen);
+						generator2.visitCompilationUnit(astBuilderGen2);
+
+						break;
+
+					case 3:
+						System.out.println("\nTache 3: Analyse  Def-Use:\n");
+						ASTBuilder astBuilderDefUse = new ASTBuilder();
+						CompilationUnit astDefUse = (CompilationUnit) astBuilderDefUse.visit(parseTree);
+						DefUseVisitor defUseVisitor = new DefUseVisitor();
+						defUseVisitor.visitCompilationUnit(astDefUse);
+						List<AssignInfo> assignInfos = defUseVisitor.getAssignInfos();
+
+						for (AssignInfo info : assignInfos) {
+							Set<String> usedVars = info.getUsedVariables();
+							String definedVar = info.getDefinedVariable();
+							if (!usedVars.isEmpty()) {
+								System.out.println("Definis: " + definedVar + " ---> Utilise: " + usedVars);
+							} else {
+								System.out.println("Definis: " + definedVar);
+							}
+						}
+
+						// Résumé des variables
+						System.out.println("\nRésumé des variables:\n");
+						System.out.println("Variables définies: " + defUseVisitor.getAllDefinedVariables());
+						System.out.println("Variables utilisées: " + defUseVisitor.getAllUsedVariables());
+						break;
+
+					case 4:
+						System.out.println("Au revoir!");
+						break;
+
+					default:
+						System.out.println("Option invalide, veuillez réessayer.");
+					}
+				} catch (InputMismatchException e) {
+					System.out.println("Entrée invalide. Veuillez entrer un nombre.");
+					scanner.next();
+				}
+			} while (choice != 4);
+			scanner.close();
+		}
+	}
 }

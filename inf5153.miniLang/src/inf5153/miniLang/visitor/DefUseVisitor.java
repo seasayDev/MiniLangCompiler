@@ -7,29 +7,62 @@ import java.util.Set;
 
 import inf5153.miniLang.ast.*;
 
+/** 
+ * Cette classe analyse chaque affectation dans le code, enregistre la variable qui est définie et toutes les variables qui sont utilisées 
+ * dans l'expression de l'affectation. Elle conserve une liste des informations d'affectation (AssignInfo) ainsi que des ensembles de 
+ * toutes les variables définies et utilisées dans le programme.
+ */
+
 public class DefUseVisitor implements AstVisitor<Void> {
     private List<AssignInfo> assignInfos = new ArrayList<>();
     private Set<String> allDefinedVariables = new HashSet<>();
     private Set<String> allUsedVariables = new HashSet<>();
 
+    /**
+     * Classe interne AssignInfo qui stocke la variable definie et les variables utilisé.
+     */
     public static class AssignInfo {
         private String definedVariable;
         private Set<String> usedVariables;
+
+        /**
+         * Constructeur de AssignInfo.
+         * 
+         * @param definedVariable la variable définie par l'affectation
+         * @param usedVariables les variables utilisés dans l'affectation
+         */
 
         public AssignInfo(String definedVariable, Set<String> usedVariables) {
             this.definedVariable = definedVariable;
             this.usedVariables = usedVariables;
         }
 
+        
+        /**
+         * Retourne la variable définie par l'affectation.
+         * 
+         * @return la variable définie
+         */
         public String getDefinedVariable() {
             return definedVariable;
         }
+
+        /**
+         * Retourne les variables utilisés dans l'affectation.
+         */
 
         public Set<String> getUsedVariables() {
             return usedVariables;
         }
     }
 
+    /**
+     * Visite un noeud d'affectation (StatemntAssign) et collecte les informations
+     * sur la variable définie et les variables utilisés.
+     * 
+     * @param statementAssign le contexte de l'affectation
+     * @return null (pas de valeur retourné)
+     */
     @Override
     public Void visitAssignment(StatementAssign statementAssign) {
         String definedVar = statementAssign.getVariableName();
@@ -41,6 +74,12 @@ public class DefUseVisitor implements AstVisitor<Void> {
         return null;
     }
 
+    /**
+     * Collecte les variables utilisés dans une expression donnée.
+     * 
+     * @param expr le contexte de l'expression
+     * @param usedVars l'ensemble des variables utilisés à  mettre à  jour
+     */
     private void collectUsedVariables(Expression expr, Set<String> usedVars) {
         if (expr instanceof ExpressionVariable) {
             usedVars.add(((ExpressionVariable) expr).getVarName());
@@ -53,6 +92,7 @@ public class DefUseVisitor implements AstVisitor<Void> {
         }
     }
 
+    
     @Override
     public Void visitBinaryExpression(ExpressionBinaire expressionBinaire) {
         collectUsedVariables(expressionBinaire.getLeftExpresion(), new HashSet<>());
@@ -162,6 +202,11 @@ public class DefUseVisitor implements AstVisitor<Void> {
         return null;
     }
 
+    /**
+     * Retourne la liste des informations d'affectation collectées.
+     * 
+     * @return la liste des AssignInfo
+     */
     public List<AssignInfo> getAssignInfos() {
         return assignInfos;
     }
