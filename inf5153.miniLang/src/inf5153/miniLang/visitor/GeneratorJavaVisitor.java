@@ -18,6 +18,7 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 	private StringBuilder output = new StringBuilder();
 	private StringBuilder output2 = new StringBuilder();
 	private String className;
+	private int indentation = 2;
 
 	/**
 	 * Constructeur de la classe GeneratorJavaVisitor.
@@ -170,7 +171,11 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 			variables.put(variableName, "int");
 			output.append("\t\tint ").append(variableName).append(";\n");
 		}
-		output2.append("\t\t").append(variableName).append(" = ").append(expression).append(";\n");
+		if (indentation > 2) {
+			output2.append("\t\t\t").append(variableName).append(" = ").append(expression).append(";\n");
+		} else {
+			output2.append("\t\t").append(variableName).append(" = ").append(expression).append(";\n");
+		}
 		return null;
 	}
 
@@ -180,16 +185,18 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 	 */
 	@Override
 	public String visitIfStatement(StatementIF statementIF) {
+		indentation += 1;
 		String condition = statementIF.getCondition().accept(this);
 		output2.append("\n\t\tif (").append(condition).append(") {\n");
-		output2.append("\t");
+	//	output2.append("\t");
 		statementIF.getBlockThen().accept(this);
 		if (statementIF.getBlockElse() != null) {
 			output2.append("\t\t} else {\n");
-			output2.append("\t");
+		//	output2.append("\t");
 			statementIF.getBlockElse().accept(this);
 			output2.append("\t\t}\n");
 		}
+		indentation -= 1;
 		return null;
 	}
 
@@ -225,11 +232,13 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 	 */
 	@Override
 	public String visitWhile(StatementWhile statementWhile) {
+		indentation += 1;
 		String condition = statementWhile.getCondition().accept(this);
 		output2.append("\n\t\twhile (").append(condition).append(") {\n");
-		output2.append("\t");
+	//	output2.append("\t");
 		statementWhile.getBlockWhile().accept(this);
 		output2.append("\t\t}\n");
+		indentation -= 1;
 		return null;
 	}
 
