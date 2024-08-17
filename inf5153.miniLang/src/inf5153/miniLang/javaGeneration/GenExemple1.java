@@ -8,16 +8,16 @@ public class GenExemple1 {
 		int x;
 
 		a = 15;
-		b = c;
+		b = 4;
 
 		if (a != 2) {
-			c = 15;
+			c = 15 + a;
 			e = b - c;
 		} else {
 			a = 15 + 18;
 		}
 
-		Scanner scanner = new Scanner(System.in);
+		java.util.Scanner scanner = new java.util.Scanner(System.in);
 		System.out.print("La taille : ");
 		x = scanner.nextInt();
 

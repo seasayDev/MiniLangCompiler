@@ -218,7 +218,7 @@ public class GeneratorJavaVisitor implements AstVisitor<String> {
 	 */
 	@Override
 	public String visitRead(StatementRead statementRead) {
-		output2.append("\n\t\tScanner scanner = new Scanner(System.in);\n");
+		output2.append("\n\t\tjava.util.Scanner scanner = new java.util.Scanner(System.in);\n");
 		String variableName = statementRead.getVarName().getVarName();
 		String msg = statementRead.getMessage();
 		output.append("\t\tint ").append(variableName).append(";\n");
